@@ -23,7 +23,7 @@ spec:
             requests:
               memory: 120Mi
             
-        image: ppc64le/nats-streaming:0.11.2
+        image: powerlinux/nats-streaming:0.11.2
         imagePullPolicy: Always
         ports:
         - containerPort: 4222
