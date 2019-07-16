@@ -23,7 +23,7 @@ spec:
             requests:
               memory: 64Mi
             
-          image: openfaas/faas-idler:0.1.9
+          image: powerlinux/faas-idler:latest-dev-ppc64le
           imagePullPolicy: Always
           env:
             - name: gateway_url
