@@ -1,0 +1,67 @@
+---
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: openfaas
+    component: prometheus
+  name: prometheus
+  namespace: "openfaas"
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+      annotations:
+        sidecar.istio.io/inject: "false"
+        checksum/prometheus-config: "8d8d46b51d43280a8843b35723e57ee1699f116f2a66c05f929039677f1d8fd3"
+    spec:
+      serviceAccountName: faas-prometheus
+      containers:
+      - name: prometheus
+        resources:
+            requests:
+              memory: 512Mi
+            
+        image: ibmcom/prometheus-ppc64le:v2.8.0
+        command:
+          - "prometheus"
+          - "--config.file=/etc/prometheus/prometheus.yml"
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9090
+          timeoutSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9090
+          timeoutSeconds: 30
+        ports:
+        - containerPort: 9090
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/prometheus/prometheus.yml
+          name: prometheus-config
+          subPath: prometheus.yml
+        - mountPath: /etc/prometheus/alert.rules.yml
+          name: prometheus-config
+          subPath: alert.rules.yml
+        - mountPath: /prometheus/data
+          name: prom-data
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+            items:
+              - key: prometheus.yml
+                path: prometheus.yml
+                mode: 0644
+              - key: alert.rules.yml
+                path: alert.rules.yml
+                mode: 0644
+        - name: prom-data
+          emptyDir: {}
