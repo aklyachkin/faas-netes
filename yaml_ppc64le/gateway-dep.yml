@@ -89,7 +89,7 @@ spec:
               cpu: 50m
               memory: 120Mi
             
-        image: openfaas/faas-netes:0.8.1
+        image: powerlinux/faas-netes:latest-ppc64le
         imagePullPolicy: 
         securityContext:
           readOnlyRootFilesystem: true
